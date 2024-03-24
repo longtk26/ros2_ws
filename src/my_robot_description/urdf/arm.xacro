@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Properties -->
+    <xacro:property name="base_arm_length" value="0.1"/>
+    <xacro:property name="base_arm_width" value="0.1"/>
+    <xacro:property name="base_arm_height" value="0.02"/>
+    <xacro:property name="forearm_radius" value="0.02"/>
+    <xacro:property name="forearm_length" value="0.3"/>
+    <xacro:property name="hand_radius" value="0.02"/>
+    <xacro:property name="hand_length" value="0.3"/>
+
+    <!-- Xacro function -->
+    <xacro:macro name="arm_link" params="prefix r l xyz rpy color">
+       <link name="${prefix}_link">
+            <visual>
+                <geometry>
+                    <cylinder radius="${r}" length="${l}" />
+                </geometry>
+                <origin xyz="${xyz}" rpy = "${rpy}" />
+                <material name="${color}" />
+            </visual>
+            <collision>
+                <geometry>
+                    <cylinder radius="${r}" length="${l}" />
+                </geometry>
+                <origin xyz="${xyz}" rpy = "${rpy}" />
+            </collision>
+            <xacro:cylinder_inertia m="0.3" r="${2*r}" h="${2*l}" 
+                                    xyz="${xyz}" rpy="${rpy}" />
+        </link>
+    </xacro:macro>
+
+    <!-- Link and joint -->
+    <link name="arm_base_link">
+        <visual>
+            <geometry>
+                <box size="${base_arm_length} ${base_arm_width} ${base_arm_height}"/>
+            </geometry>
+            <origin xyz="0 0 ${base_arm_height / 2.0}" rpy = "0 0 0" />
+            <material name="orange" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${base_arm_length} ${base_arm_width} ${base_arm_height}"/>
+            </geometry>
+            <origin xyz="0 0 ${base_arm_height / 2.0}" rpy = "0 0 0" />
+        </collision>
+        <xacro:box_inertia m="0.5" l="${2*base_arm_length}" w="${2*base_arm_width}" h="${2*base_arm_height}"
+                           xyz="0 0 ${base_arm_height / 2.0}" rpy="0 0 0" />
+    </link>
+
+    <xacro:arm_link prefix="forearm" r="${forearm_radius}" l="${forearm_length}" 
+                   xyz="0 0 ${forearm_length / 2}" rpy="0 0 0" color="yellow"/>
+    <xacro:arm_link prefix="hand" r="${hand_radius}" l="${hand_length}" 
+                   xyz="0 0 ${hand_length / 2}" rpy="0 0 0" color="orange"/>
+
+    <joint name="arm_base_forearm_joint" type="revolute">
+        <parent link="arm_base_link"/>
+        <child link="forearm_link"/>
+        <origin xyz="0 0 ${base_arm_height}" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="0" upper="${pi / 2.0}" effort="100" velocity="100" />
+        <dynamics friction="0.05" damping="0.1" />
+    </joint>
+
+    <joint name="forearm_hand_joint" type="revolute">
+        <parent link="forearm_link"/>
+        <child link="hand_link"/>
+        <origin xyz="0 0 ${forearm_length}" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="0" upper="${pi / 2.0}" effort="100" velocity="100" />
+        <dynamics friction="0.05" damping="0.1" />
+    </joint>
+
+    
+</robot>
