@@ -4,7 +4,7 @@
   <name>my_robot_bringup</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="nightfury8202@gmail.com">ngoclong</maintainer>
+  <maintainer email="ngoclong@todo.todo">ngoclong</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
